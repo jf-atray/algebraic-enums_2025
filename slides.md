@@ -45,33 +45,34 @@ Shannon Cavanagh - 11/08/2025 - Rochester Developers
 ---
 
 ```yaml
-layout: two-cols
+layout: two-cols-title
 layoutClass: gap-16
 transition: slide-right
+color: teal
 ```
+
+::title::
+
+# Outline
 
 ::left::
 
-# Table of contents
-
-You can use the `Toc` component to generate a table of contents for your slides:
+  
+1. Author
+1. Concept
+1. Context
+1. Non-Templating
+1. Templating
+1. Error Inverting
 
 ::right::
-
-```html
-<Toc minDepth="1" maxDepth="1" />
-```
-
-The title will be inferred from your slide content, or you can override it with `title` and `level` in your frontmatter.
-
-<Toc text-sm minDepth="1" maxDepth="2" />
 
 ---
 
 ```yaml
 layout: image-left
 image: https://media1.tenor.com/m/enfY28nVoOMAAAAd/smiling-friends-pim.gif
-transition: slide-bottom
+transition: slide-down
 color: blue
 ```
 
@@ -106,11 +107,12 @@ jonf@jonf.blog
 ---
 
 ```yaml
-layout: two-cols-title
+layout: top-title-two-cols
 columns: is-8
 align: l-lt-lt
 class: text-center
 transition: slide-left
+color: teal-light
 ```
 
 $$
@@ -144,11 +146,11 @@ Mention enums [CLICK] Code example, =THEN TALK=. Last line is joke.
 ---
 
 ```yaml
-layout: full
+layout: quote
 transition: slide-up
 ```
 
-![Do not put gorilla glue in your hair](https://media1.tenor.com/m/BukqcvkwSqsAAAAC/glue-gorilla-glue.gif)
+<img src="https://media1.tenor.com/m/BukqcvkwSqsAAAAC/glue-gorilla-glue.gif" class="mx-auto w-1/2" alt="Do not put gorilla glue in your hair" />
 
 <!--
 "Why limit ourselves *at all*?"
@@ -160,7 +162,9 @@ Who's going to stop you, the man??
 ```yaml
 layout: top-title
 transition: slide-right
+color: red
 ```
+
 ::title::
 # Context
 ::content::
@@ -180,7 +184,7 @@ transition: slide-right
 </v-clicks>
 
 <!--
-  ML stands for 'Meta Language'
+ML stands for 'Meta Language'
   Standard ML standardized this in 1983.
   Other languages include Miranda, Haskell, OCaml
   A more complete type system allows stricter compiler promises
@@ -188,24 +192,34 @@ transition: slide-right
   Parallel programming has made the stack frame more and more important.
   Panics & unwinding are a lot less acceptable.
   By "throwing more exceptions" ( complex sum types of errors), we can throw less exceptions.
---->
+-->
 
 ---
 
 ```yaml
 layout: section
-transition: slide-bottom
+transition: slide-down
+color: sky-light
 ```
 
 # Code
 
-Some examples in the Rust programming language.
+<v-click>
+
+![lets go already](https://media1.tenor.com/m/oVYyASiqzxwAAAAC/futurama-let%27s-go.gif)
+
+</v-click>
+
+<!--
+Examples will be in the RUST programming language, which should be mostly similar to SWIFT / any ALGOL languages.
+-->
 
 ---
 
 ```yaml
 layout: top-title
 transition: fade
+color: red
 ```
 
 ::title::
@@ -216,10 +230,25 @@ transition: fade
 
 <<< @/snippets/nontemplating_example.rs rust {1,5|1-3,5,7,14|1-3,5,7-10,13-14|1,4-8,11-14|}
 
+<!--
+We're going to go over making a basic enum, 
+When I say 'templating' I mean this enum has only one purpose.
+In most languages with SUM types, we don't specify the int values for these states, as for the most powerful pattern matching, the compiler needs to be able to promise non-overlapping behavior.
+( if you need ints, just have a translation function it's fine )
+[CLICK]
+Here's that pattern matching in action. Many languages have this now.
+[CLICK]
+A SUM type can itself, contain a composite structure. This can be a struct, int, anything. The compiler implementation will decide how this is laid out in memory. Normally a deciding byte but might not be!
+In the pattern matching we're allowed access into this payload. Unlike UNIONS or loose enums there's no room for programmer error here.
+Don't forget u have a cute guy next slide
+-->
+
 ---
 
 ```yaml
 layout: top-title
+transition: fade
+color: red
 ```
 
 ::title::
@@ -245,7 +274,6 @@ layout: top-title-two-cols
 columns: is-5
 align: l-lt-lt
 color: amber
-
 ```
 
 ::title::
@@ -262,6 +290,22 @@ color: amber
   Which is a <i>composite</i> of data or no-data
 </StickyNote>
 
+<!-- 
+Here it is. Ultimate power 
+For pointer types or things with bit niches, this is ZERO COST.
+[CLICK]
+Here we have a more casual pattern match. We're targeting one specific pattern and extracting its payload
+[CLICK][CLICK]
+This can make error-handling explicit. In every language with SUM types,
+it almost always starts with optionals and errors.
+With, for instance, nullable pointers, you have to (aka, SHOULD) check ur pointers are not null on EVERY function signature. Because.
+By representing a null reference as an option, when we have a function signature WITHOUT Option<>, no-one will be allowed to call it with None ( aka null )
+[CLICK]
+db.read() might be null. We're going to handle that, so that the functions that work on this data don't need to check it.
+[CLICK] If not null, we can execute this branch confidently.
+[Click etc]
+-->
+
 ---
 
 ```yaml
@@ -273,7 +317,7 @@ color: rose-light
 
 ::title::
 
-# Complex Templating
+# Complex Non-Templating
 
 ::left::
 
@@ -286,10 +330,23 @@ color: rose-light
    1. Sometimes this is thin!
    1. Sometimes the compiler can reason without it!
 1. Eventually as natural as a struct
-   <Mug style="float:right;margin-right:2em;margin-top:-2em;" color="#FFA2AB" size="50" mood="shocked"/>
+   <Mug style="float:right;margin-right:2em;margin-top:2em;" color="#FFA2AB" size="50" mood="shocked"/>
 
 ::right::
 <<< @/snippets/complex_templating1.rs rust {1-6,14,16-21|1-4,7,14,16-21|1-4,8-11,14,16-21|1-4,12-14,16-99}
+
+<!--
+Read lines. What can we put in here? Anything you truly want for good reasons.
+Compiler will reason about bit blits. In some cases on the stack, it won't 
+Let's start with pazaak! Every card has a value from one-to-ten, and some way that value affects the board. Let's break it down. They all share these fields,
+and they all have only exactly one of these!
+[CLICK]
+In some cases, we'll need more information.
+[CLICK]
+In rust at least, the line between tuples and structs is fuzzy. We can just go ahead and name complex fields.
+[CLICK]
+Here I've got an unknown function pointer we lookup at runtime in a vtable. ( probably would be an inherited class normally but.. )
+-->
 
 ---
 
@@ -297,6 +354,7 @@ color: rose-light
 layout: side-title
 align: rm-lm
 transition: fade
+color: indigo
 ```
 
 ::title::
@@ -305,92 +363,134 @@ transition: fade
 
 ::content::
 
+- The Triangle of doom!
 - I don't care what you think, rightward drift is _real_.
 - The most common SUM in programming is..
 
-  <AdmonitionType v-click type="warning" width="350px" v-drag>
+  <AdmonitionType v-click type="warning" title="" width="350px" v-drag>
   <i>User Input!</i><br/>
   includes.. Integrity, Reasoning, and State
   </AdmonitionType>
+
+<!--
+Who's heard of the triangle of doom?
+It starts with one "if not null"... then inside that, check the next if not null..
+SUM types can help combat this. In particular, the most common thing
+SUM can resolve is... [CLICK]
+-->
 
 ---
 
 ```yaml
 layout: two-cols-title
-columns: is-6
+columns: is-4
 align: l-lt-lt
 transition: fade
+titlepos: t
+color: green-light
 ```
 
 ::title::
 
-# Error Inverting
+# Error Inverting and Complex Templating
 
 ::left::
 <<< @/snippets/error_inverting1.rs rust {6-10|1-4|}
 ::right::
 <<< @/snippets/error_inverting2.rs rust {0-0|1,12-14|1-4,12-14|5-7,12-14|8-12,12-14|}
+<Mug style="margin-bottom:4em;bottom:0px;position:absolute;" mood="happy" size="100"/>
+
+<!--
+Here's a common one. Nothing quite looking up fault codes in a giant int ENUM.
+[CLICK]
+Let's look carefully at this one. This is a common shape, if the result can be proven to be OK, then it can also be proven to be T.
+If it can be proven to be Err, then it can be proven to be E. It's a real type safe union. The is a LOT that can be done, but let's just start with this example from the standard lib.
+[CLICK]just a thing to return[CLICK]
+We might return a Customer, or we might return an error.
+Lots of functions involving IO or user input will do this. This way
+we can force the caller to handle errors.
+If things go good, we'll return an OK result with some kind of customer.
+[CLICK]
+Here we go. We do some work. It looks to me that source-read might have a result, or it might not find anything. We'll call that a pipe panic.
+Aside - simple functions probably don't need tons of error codes. That's left up to good taste.
+[CLICK]
+After some more work, we can check more complex conditions 
+-->
 
 ---
 
 ```yaml
 layout: two-cols-title
-columns: is-6
+columns: is-4
 align: l-lt-lt
 transition: fade
+titlepos: t
+color: green-light
 ```
 
 ::title::
 
-# Error Inverting
+# Error Inverting and Complex Templating
 
 ::left::
 <<< @/snippets/error_inverting1.rs rust {1,4-6,10-12,14,16}
 ::right::
 <<< @/snippets/error_inverting3.rs rust {2-12}
 
+<Mug style="margin-bottom:4em;bottom:0px;position:absolute;" mood="happy" size="100"/>
+
 ---
 
 ```yaml
 layout: two-cols-title
-columns: is-6
+columns: is-4
 align: l-lt-lt
 transition: fade
+titlepos: t
+color: green-light
 ```
 
 ::title::
 
-# Error Inverting
+# Error Inverting and Complex Templating
 
 ::left::
 <<< @/snippets/error_inverting1.rs rust {1,4-6,10-12,14,16}
 ::right::
 <<< @/snippets/error_inverting4.rs rust {2-9}
 
+<Mug style="margin-bottom:4em;bottom:0px;position:absolute;" mood="happy" size="100"/>
+
 ---
 
 ```yaml
 layout: two-cols-title
-columns: is-6
+columns: is-4
 align: l-lt-lt
+transition: slide-up
+titlepos: t
+color: green-light
 ```
 
 ::title::
 
-# Error Inverting
+# Error Inverting and Complex Templating
 
 ::left::
 <<< @/snippets/error_inverting1.rs rust
 ::right::
 <<< @/snippets/error_inverting4.rs rust
 
+<Mug style="margin-bottom:4em;bottom:0px;position:absolute;" mood="happy" size="100"/>
+
 ---
 
 ```yaml
 layout: full
 class: text-center
+color: orange-light
 ```
 
 # End!
 
-![Obi-wan Bar](https://media1.tenor.com/m/ncyU2W-KyPYAAAAd/obi-wan-bar.gif)
+<img src="https://media1.tenor.com/m/ncyU2W-KyPYAAAAd/obi-wan-bar.gif" class="mx-auto w-1/2" style="margin-top:5em" alt="Obi-wan Bar" />

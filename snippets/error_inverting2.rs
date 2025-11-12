@@ -1,4 +1,4 @@
-fn try_listen( source: &Network, sink: &File ) -> Result<> {
+fn try_listen( source: &Network, sink: &File ) -> Result<Customer, ListenErrors> {
   let Option::Some(input) = source.read() else {
     return Result::Err( ListenErrors::PipePanic );
   };
